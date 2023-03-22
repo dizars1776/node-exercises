@@ -8,15 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Joi from 'joi';
-import pgPromise from 'pg-promise';
-import { readFileSync } from 'fs';
-const db = pgPromise()('postgres://postgres:postgres@localhost:5432/planets');
-// inits the database - planets - and adds 2 planets
-const setupDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    const initSql = readFileSync('./src/assets/14.sql').toString();
-    yield db.query(initSql);
-});
-setupDb();
+import { db } from '../assets/db.js';
 // GET /api/planets: return all planets (JSON) with 200
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const planets = yield db.many(`SELECT * FROM planets;`);
