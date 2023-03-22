@@ -7,7 +7,7 @@ const db = pgPromise()('postgres://postgres:postgres@localhost:5432/planets')
 
 // inits the database - planets - and adds 2 planets
 const setupDb = async () => {
-  const  initSql = readFileSync('./src/assets/14.sql').toString();
+  const initSql = readFileSync('./src/assets/14.sql').toString()
   await db.query(initSql)
 }
 setupDb()
@@ -50,10 +50,10 @@ const create = async (req: Request, res: Response) => {
 
 // PUT /api/planets/:id: update a planet by id, return only 200 code and a success JSON with key msg
 const updateById = async (req: Request, res: Response) => {
-  const id  = Number(req.params.id)
+  const id = Number(req.params.id)
   const { name } = req.body
 
-  // validate 
+  // validate
   const updatedPlanetParams = { name }
   const validateUpdatedPlanet = planetSchema.validate(updatedPlanetParams)
 
@@ -71,7 +71,10 @@ const updateById = async (req: Request, res: Response) => {
 // DELETE /api/planets/:id: delete a planet by id, return only 200 code and a success JSON with key msg
 const deleteById = async (req: Request, res: Response) => {
   const id = Number(req.params.id)
-  const planetToDelete =  await db.oneOrNone(`SELECT id FROM planets WHERE id=$1;`, id)
+  const planetToDelete = await db.oneOrNone(
+    `SELECT id FROM planets WHERE id=$1;`,
+    id
+  )
 
   // check if the given planet's id exists in the database and act accordingly
   try {
@@ -79,11 +82,23 @@ const deleteById = async (req: Request, res: Response) => {
       await db.none(`DELETE FROM planets WHERE id=$1;`, planetToDelete.id)
       res.status(200).json({ msg: 'The planet was deleted!' })
     } else {
-      throw('Id doesn\'t exist!')
-    } 
+      throw "Id doesn't exist!"
+    }
   } catch (error) {
     res.status(404).json({ msg: error })
   }
 }
 
-export { getAll, getOneById, create, updateById, deleteById }
+const createImage = async (req: Request, res: Response) => {
+  const id = Number(req.params.id)
+  const fileName = req.file?.path
+
+  if (fileName) {
+    db.none(`UPDATE planets SET image=$2 WHERE id=$1`, [id, fileName])
+    res.status(201).json({ msg: 'Planet image uploaded successfully.' })
+  } else {
+    res.status(400).json({ msg: 'Planet image failed to uplaod.' })
+  }
+}
+
+export { getAll, getOneById, create, updateById, deleteById, createImage }

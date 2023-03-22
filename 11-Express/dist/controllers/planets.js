@@ -53,7 +53,7 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const updateById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(req.params.id);
     const { name } = req.body;
-    // validate 
+    // validate
     const updatedPlanetParams = { name };
     const validateUpdatedPlanet = planetSchema.validate(updatedPlanetParams);
     // update
@@ -78,11 +78,23 @@ const deleteById = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(200).json({ msg: 'The planet was deleted!' });
         }
         else {
-            throw ('Id doesn\'t exist!');
+            throw "Id doesn't exist!";
         }
     }
     catch (error) {
         res.status(404).json({ msg: error });
     }
 });
-export { getAll, getOneById, create, updateById, deleteById };
+const createImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const id = Number(req.params.id);
+    const fileName = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+    if (fileName) {
+        db.none(`UPDATE planets SET image=$2 WHERE id=$1`, [id, fileName]);
+        res.status(201).json({ msg: 'Planet image uploaded successfully.' });
+    }
+    else {
+        res.status(400).json({ msg: 'Planet image failed to uplaod.' });
+    }
+});
+export { getAll, getOneById, create, updateById, deleteById, createImage };
