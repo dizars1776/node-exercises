@@ -40,4 +40,9 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(201).json({ id, msg: 'User created successfully.' });
     }
 });
-export { logIn, signUp };
+const logOut = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    yield db.none(`UPDATE users SET token=$2 WHERE id=$1`, [user === null || user === void 0 ? void 0 : user.id, null]);
+    res.status(200).json({ msg: 'Logout successfull.' });
+});
+export { logIn, signUp, logOut };
